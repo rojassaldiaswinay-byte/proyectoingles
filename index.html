@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Migration Project | Systems Engineering</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #0f0;
+            --dark-green: #003300;
+            --bg-dark: #050505;
+            --bg-panel: rgba(0, 15, 0, 0.85); /* Semitransparente para ver la lluvia */
+            --white: #e0e0e0;
+            --border-glow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--neon-green);
+            background-color: var(--bg-dark);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Canvas de fondo para la animación JS */
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Cabecera Hacker */
+        header {
+            background-color: rgba(0, 0, 0, 0.9);
+            border-top: 4px solid var(--neon-green);
+            border-bottom: 1px solid var(--neon-green);
+            padding: 60px 0;
+            text-align: center;
+            box-shadow: var(--border-glow);
+            margin-bottom: 40px;
+        }
+
+        .university-tag {
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            display: block;
+            text-shadow: 0 0 5px var(--white);
+        }
+
+        h1 {
+            color: var(--neon-green);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            line-height: 1.2;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .subtitle {
+            color: #88ff88;
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Secciones con efecto de cristal oscuro */
+        .section {
+            background: var(--bg-panel);
+            border: 1px solid var(--neon-green);
+            border-radius: 4px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: var(--border-glow);
+            backdrop-filter: blur(3px);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--neon-green);
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--neon-green);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Cuadrícula del equipo */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .team-member {
+            background: rgba(0, 30, 0, 0.6);
+            padding: 20px;
+            border-left: 4px solid var(--neon-green);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .role {
+            font-size: 0.875rem;
+            color: #88ff88;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .name {
+            font-size: 1.25rem;
+            color: var(--white);
+            text-shadow: 0 0 3px var(--white);
+        }
+
+        /* Botones estilo terminal */
+        .resources-flex {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            font-size: 1rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background-color: transparent;
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--neon-green);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--white);
+            border: 1px solid var(--white);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--white);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--white);
+        }
+
+        .abstract {
+            font-size: 1.05rem;
+            color: var(--white);
+            margin-bottom: 20px;
+            text-align: justify;
+            line-height: 1.8;
+        }
+
+        ul {
+            list-style-type: square;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #88ff88;
+            font-size: 0.9rem;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-top: 1px solid var(--neon-green);
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix-bg"></canvas>
+
+    <header>
+        <div class="container">
+            <span class="university-tag">Universidad Privada Domingo Savio</span>
+            <h1>> SERVER_MIGRATION & SECURITY_UPDATE_</h1>
+            <p class="subtitle">Actividad Final Integrador – Inglés II | 3er Semestre</p>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <section class="section">
+            <h2 class="section-title">Init Project_Overview</h2>
+            <p class="abstract">
+                Este trabajo final presenta una conversación técnica en inglés entre tres ingenieros del área de sistemas. En el diálogo se analiza un procedimiento realista de migración de servidor y actualización de seguridad, aplicando estructuras gramaticales estudiadas durante el módulo.
+            </p>
+            
+            <div class="resources-flex">
+                <a href="https://files.fm/f/gy3j8cyx7t" target="_blank" class="btn btn-primary">
+                    [ View Technical Doc ]
+                </a>
+                <a href="https://files.fm/f/pz2k3j9ghh" target="_blank" class="btn btn-secondary">
+                    [ Listen Podcast ]
+                </a>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">System_Admins</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="role">Infrastructure Engineer</div>
+                    <div class="name">Wiñay Rojas</div>
+                </div>
+                <div class="team-member">
+                    <div class="role">Systems Engineer</div>
+                    <div class="name">Alax</div>
+                </div>
+                <div class="team-member">
+                    <div class="role">Security & Monitoring</div>
+                    <div class="name">Evelyn</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Applied_Linguistics.log</h2>
+            <p class="abstract">
+                El contenido está orientado al contexto profesional de la Ingeniería en Sistemas e incluye su traducción al español como evidencia de comprensión y traducción técnica. Las estructuras gramaticales evaluadas incluyen:
+            </p>
+            <ul style="margin-left: 20px; color: var(--white); line-height: 1.8;">
+                <li><strong style="color: var(--neon-green);">Future Simple & Going To:</strong> Planificación de infraestructura.</li>
+                <li><strong style="color: var(--neon-green);">Passive Voice:</strong> Reporte de estados de bases de datos y archivos.</li>
+                <li><strong style="color: var(--neon-green);">Present Perfect:</strong> Confirmación de procesos y simulaciones completadas.</li>
+                <li><strong style="color: var(--neon-green);">Technical Terminology:</strong> Server migration, rollback plan, API responses, network latency.</li>
+            </ul>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Wiñay Alax Inti Rojas Saldias. Docente: Ing. Alex Medrano Sejas.</p>
+        </div>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+
+        // Ajustar el canvas al tamaño de la ventana
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Caracteres para la lluvia (Katakana + Latin + Números)
+        const matrixChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ';
+        const charsArray = matrixChars.split('');
+
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        // Inicializar las gotas
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function drawMatrix() {
+            // Fondo translúcido para el efecto de estela
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Color del texto y fuente
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'px monospace';
+
+            // Dibujar los caracteres
+            for (let i = 0; i < drops.length; i++) {
+                const text = charsArray[Math.floor(Math.random() * charsArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // Reiniciar la gota al llegar al fondo con cierta probabilidad
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        // Ejecutar la animación
+        setInterval(drawMatrix, 35);
+
+        // Reajustar el canvas si se cambia el tamaño de la ventana
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
